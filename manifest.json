@@ -1,11 +1,9 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "printer",
+	"name": "Printer",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Print your notes in a pretty format using Pandoc and Typst utilizing custom templates.",
+	"author": "tobias0409",
 	"isDesktopOnly": false
 }

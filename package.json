@@ -20,5 +20,11 @@
 		"obsidian": "latest",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
+	},
+	"dependencies": {
+		"@bjorn3/browser_wasi_shim": "^0.4.2",
+		"@myriaddreamin/typst-ts-renderer": "^0.6.1-rc3",
+		"@myriaddreamin/typst-ts-web-compiler": "^0.6.1-rc3",
+		"@myriaddreamin/typst.ts": "^0.6.1-rc3"
 	}
 }
