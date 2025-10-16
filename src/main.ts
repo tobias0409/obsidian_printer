@@ -124,16 +124,23 @@ async function downloadAndExtractAssets(
 		for (const filename of files) {
 			const file = zip.files[filename];
 
+			const normalizedPath = filename.startsWith("assets/")
+				? filename.substring("assets/".length)
+				: filename;
+
+			// Skip empty paths after normalization
+			if (!normalizedPath) continue;
+
 			if (file.dir) {
 				// Create directory
 				await plugin.app.vault.adapter.mkdir(
-					`${assetsDir}/${filename}`
+					`${assetsDir}/${normalizedPath}`
 				);
 			} else {
 				// Extract file
 				const content = await file.async("uint8array");
 				await plugin.app.vault.adapter.writeBinary(
-					`${assetsDir}/${filename}`,
+					`${assetsDir}/${normalizedPath}`,
 					content.slice().buffer
 				);
 			}

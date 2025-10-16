@@ -33,4 +33,4 @@ export const PLUGIN_NAME = "Printer";
 export const PLUGIN_DIR = (plugin: Printer) =>
 	`./${plugin.app.vault.configDir}/plugins/${PLUGIN_NAME}`;
 
-export const GITHUB_REPO = "tobias0409/obsidian-printer";
+export const GITHUB_REPO = "tobias0409/obsidian_printer";
