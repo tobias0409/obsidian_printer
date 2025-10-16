@@ -1,7 +1,7 @@
 {
 	"id": "printer",
 	"name": "Printer",
-	"version": "1.0.0",
+	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
 	"description": "Print your notes in a pretty format using Pandoc and Typst utilizing custom templates.",
 	"author": "tobias0409",

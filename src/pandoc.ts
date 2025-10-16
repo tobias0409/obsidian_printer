@@ -22,7 +22,7 @@ type WasmInstance = WebAssembly.Instance & { exports: WasmExports };
 export const convertMarkdownToTypst = async (
 	plugin: PrinterPlugin,
 	markdownContent: string,
-	template?: Uint8Array<ArrayBuffer>
+	template: Uint8Array
 ): Promise<string> => {
 	const wasmFile = await plugin.app.vault.adapter.readBinary(
 		`${PLUGIN_DIR(
@@ -38,7 +38,7 @@ export const convertMarkdownToTypst = async (
 
 	let templateFile;
 
-	if (template) {
+	if (template.byteLength > 0) {
 		templateFile = new File(template, { readonly: true });
 	}
 
@@ -56,7 +56,7 @@ export const convertMarkdownToTypst = async (
 
 	const result = run(
 		`${
-			template
+			template.byteLength > 0
 				? `-f markdown -t typst -s --template=/template.typ`
 				: `-f markdown -t typst -s`
 		}`,

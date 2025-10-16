@@ -22,4 +22,4 @@ data.json
 .DS_Store
 
 # Exclude plugin assets
-assets/
+templates/

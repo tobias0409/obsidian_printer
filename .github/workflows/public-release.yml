@@ -1,0 +1,42 @@
+name: Draft public release
+run-name: Public Release by @${{ github.actor }} - ${{ github.event.head_commit.message }}
+
+on:
+    push:
+        tags:
+            - "*"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+
+            - name: Build
+              run: |
+                  npm install
+                  npm run build
+
+            # Create assets ZIP
+            - name: Package assets
+              run: |
+                  zip -r printer-assets-${{ github.ref_name }}.zip assets
+
+            # Create release with both plugin files and assets
+            - name: Create Release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }
+              run: |
+                  tag="${GITHUB_REF#refs/tags/}"
+
+                  gh release create "$tag" \
+                    --title="$tag" \
+                    --draft \
+                    main.js manifest.json styles.css printer-assets-${{ github.ref_name }}.zip

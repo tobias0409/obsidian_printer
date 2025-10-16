@@ -1,16 +1,10 @@
-import { Notice, Plugin } from "obsidian";
+import { Notice, Plugin, requestUrl } from "obsidian";
 import {
 	DEFAULT_SETTINGS,
 	PrinterSettings,
 	registerSettingsTab,
 } from "./settings";
-import { fetchPandocWasm, fetchTypstWasm } from "./utils/fetchWasm";
-import {
-	PLUGIN_DIR,
-	PLUGIN_NAME,
-	TYPST_TS_VERSION,
-	WASM_PANDOC_VERSION,
-} from "./utils/constants";
+import { GITHUB_REPO, PLUGIN_DIR, PLUGIN_NAME } from "./utils/constants";
 import { registerEvents } from "./events";
 
 export default class PrinterPlugin extends Plugin {
@@ -61,70 +55,93 @@ export default class PrinterPlugin extends Plugin {
 	}
 }
 
-// only works for typst so for / will use it from the github release later on
 const initPluginFiles = async (plugin: PrinterPlugin) => {
-	resetVersionFolder(
-		plugin,
-		`${PLUGIN_DIR(plugin)}/assets/wasm/typst-ts`,
-		TYPST_TS_VERSION
-	);
-	try {
-		// Fetch the WASM files for the Typst compiler and renderer
-		await fetchTypstWasm(plugin);
-	} catch (error) {
-		new Notice(
-			`${PLUGIN_NAME} Failed to download the Typst compiler/renderer. Please check your internet connection or try again later.`,
-			5000
-		);
-		console.error("Typst compiler download failed:", error);
+	const assetsDir = `${PLUGIN_DIR(plugin)}/assets`;
+	const versionFile = `${assetsDir}/.version`;
+	const pluginVersion = plugin.manifest.version;
+
+	// Check if assets exist and are up-to-date
+	const versionExists = await plugin.app.vault.adapter.exists(versionFile);
+	let currentVersion = "";
+
+	if (versionExists) {
+		currentVersion = await plugin.app.vault.adapter.read(versionFile);
 	}
 
-	// Create folder for pandoc assets if it doesn't exist
-	await plugin.app.vault.adapter.mkdir(
-		`${PLUGIN_DIR(plugin)}/assets/wasm/pandoc`
-	);
+	// Download assets if missing or outdated
+	if (currentVersion !== pluginVersion) {
+		try {
+			// Clear old assets
+			if (await plugin.app.vault.adapter.exists(assetsDir)) {
+				await plugin.app.vault.adapter.rmdir(assetsDir, true);
+			}
 
-	resetVersionFolder(
-		plugin,
-		`${PLUGIN_DIR(plugin)}/assets/wasm/pandoc`,
-		WASM_PANDOC_VERSION
-	);
-	try {
-		// Fetch the WASM files for pandoc
-		await fetchPandocWasm(plugin);
-	} catch (error) {
-		new Notice(
-			`${PLUGIN_NAME} Failed to download pandoc. Please check your internet connection or try again later.`,
-			5000
-		);
-		console.error("Pandoc download failed:", error);
+			// Create assets directory
+			await plugin.app.vault.adapter.mkdir(assetsDir);
+
+			// Download and extract new assets
+			await downloadAndExtractAssets(plugin, pluginVersion);
+
+			// Write version file
+			await plugin.app.vault.adapter.write(versionFile, pluginVersion);
+		} catch (error) {
+			new Notice(
+				`${PLUGIN_NAME}: Failed to download assets. Please check your internet connection or try again later.`,
+				5000
+			);
+			console.error("Assets download failed:", error);
+		}
 	}
+
+	// Create template folder if it doesn't exist
+	await plugin.app.vault.adapter.mkdir(`${PLUGIN_DIR(plugin)}/templates`);
 };
 
-const resetVersionFolder = async (
+async function downloadAndExtractAssets(
 	plugin: PrinterPlugin,
-	path: string,
 	version: string
-) => {
-	// Create folder for assets if it doesn't exist
-	await plugin.app.vault.adapter.mkdir(path);
+) {
+	const assetsDir = `${PLUGIN_DIR(plugin)}/assets`;
+	const zipUrl = `https://github.com/${GITHUB_REPO}/releases/download/${version}/printer-assets-${version}.zip`;
 
-	// Check if the version folder exists
-	const pandocVersionFolder = await plugin.app.vault.adapter.exists(
-		`${path}/${version}`
-	);
+	try {
+		// Download the ZIP file
+		const response = await requestUrl({
+			url: zipUrl,
+			method: "GET",
+		});
 
-	if (!pandocVersionFolder) {
-		// Delete everything in the pandoc to only keep the latest version
-		const pandocFolder = await plugin.app.vault.adapter.list(path);
+		if (response.status !== 200) {
+			throw new Error(`Failed to download assets: ${response.status}`);
+		}
 
-		if (pandocFolder) {
-			for (const folder of pandocFolder.folders) {
-				await plugin.app.vault.adapter.rmdir(folder, true);
+		// Use JSZip to extract
+		const JSZip = await import("jszip");
+		const zip = await JSZip.loadAsync(response.arrayBuffer);
+
+		// Extract all files
+		const files = Object.keys(zip.files);
+		for (const filename of files) {
+			const file = zip.files[filename];
+
+			if (file.dir) {
+				// Create directory
+				await plugin.app.vault.adapter.mkdir(
+					`${assetsDir}/${filename}`
+				);
+			} else {
+				// Extract file
+				const content = await file.async("uint8array");
+				await plugin.app.vault.adapter.writeBinary(
+					`${assetsDir}/${filename}`,
+					content.slice().buffer
+				);
 			}
 		}
 
-		// Create the version folder
-		await plugin.app.vault.adapter.mkdir(`${path}/${version}`);
+		new Notice(`${PLUGIN_NAME}: Assets downloaded successfully`);
+	} catch (error) {
+		console.error("Failed to download assets:", error);
+		throw error;
 	}
-};
+}
