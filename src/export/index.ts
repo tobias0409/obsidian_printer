@@ -5,13 +5,13 @@ import { ASSETS_VERSION, PLUGIN_NAME } from "src/utils/constants";
 import { readFile, writeFile } from "src/utils/fs";
 import { convertMarkdownToTypst } from "./engines/pandoc";
 import { convertTypstToPdf, convertTypstToCanvas } from "./engines/typst";
-import { listTemplates } from "templates";
+import { listTemplates } from "src/templates";
 
 export const printPdf = async (file: TFile, plugin: PrinterPlugin) => {
 	if (plugin.settings.assetsVersion == "") {
 		new Notice(
 			`${PLUGIN_NAME}: Assets not initialized. Please go to settings and download the assets`,
-			5000
+			5000,
 		);
 		return;
 	}
@@ -19,7 +19,7 @@ export const printPdf = async (file: TFile, plugin: PrinterPlugin) => {
 	if (plugin.settings.assetsVersion != ASSETS_VERSION) {
 		new Notice(
 			`${PLUGIN_NAME}: Invalid assets version. Please go to settings and update the assets`,
-			5000
+			5000,
 		);
 		return;
 	}
@@ -32,7 +32,7 @@ export const printPdf = async (file: TFile, plugin: PrinterPlugin) => {
 			const embedLink = embed.link;
 			const embedFile = plugin.app.metadataCache.getFirstLinkpathDest(
 				embedLink,
-				file.path
+				file.path,
 			);
 			if (embedFile && embedFile instanceof TFile) {
 				const embedData = await plugin.app.vault.readBinary(embedFile);
@@ -57,7 +57,7 @@ export const printPdf = async (file: TFile, plugin: PrinterPlugin) => {
 
 				const resources = await loadTemplateResources(
 					plugin,
-					templateBasePath
+					templateBasePath,
 				);
 				templateFile = resources.template;
 				templateImages = resources.images;
@@ -72,7 +72,7 @@ export const printPdf = async (file: TFile, plugin: PrinterPlugin) => {
 				const typstContent = await convertMarkdownToTypst(
 					plugin,
 					markdownContent,
-					new Uint8Array(templateFile.slice().buffer)
+					new Uint8Array(templateFile.slice().buffer),
 				);
 
 				// Merge template images and embeds
@@ -84,7 +84,7 @@ export const printPdf = async (file: TFile, plugin: PrinterPlugin) => {
 				const pdf = await convertTypstToPdf(
 					typstContent,
 					allResources,
-					plugin
+					plugin,
 				);
 				const newFile = file.path.replace(".md", ".pdf");
 
@@ -94,19 +94,19 @@ export const printPdf = async (file: TFile, plugin: PrinterPlugin) => {
 			} catch (err) {
 				console.error("Export to PDF failed:", err);
 			}
-		}
+		},
 	).open();
 };
 
 export const previewPdf = async (
 	file: TFile,
 	container: HTMLElement,
-	plugin: PrinterPlugin
+	plugin: PrinterPlugin,
 ) => {
 	if (plugin.settings.assetsVersion == "") {
 		new Notice(
 			`${PLUGIN_NAME}: Assets not initialized. Please go to settings and download the assets`,
-			5000
+			5000,
 		);
 		return;
 	}
@@ -114,7 +114,7 @@ export const previewPdf = async (
 	if (plugin.settings.assetsVersion != ASSETS_VERSION) {
 		new Notice(
 			`${PLUGIN_NAME}: Invalid assets version. Please go to settings and update the assets`,
-			5000
+			5000,
 		);
 		return;
 	}
@@ -127,7 +127,7 @@ export const previewPdf = async (
 			const embedLink = embed.link;
 			const embedFile = plugin.app.metadataCache.getFirstLinkpathDest(
 				embedLink,
-				file.path
+				file.path,
 			);
 			if (embedFile && embedFile instanceof TFile) {
 				const embedData = await plugin.app.vault.readBinary(embedFile);
@@ -142,7 +142,7 @@ export const previewPdf = async (
 	const typstContent = await convertMarkdownToTypst(
 		plugin,
 		markdownContent,
-		new Uint8Array()
+		new Uint8Array(),
 	);
 
 	// Merge template images and embeds
@@ -154,7 +154,7 @@ export const previewPdf = async (
 		typstContent,
 		allResources,
 		container,
-		plugin
+		plugin,
 	);
 	return canvas;
 };
@@ -166,13 +166,12 @@ interface TemplateResources {
 
 async function loadTemplateResources(
 	plugin: PrinterPlugin,
-	templateBasePath: string
+	templateBasePath: string,
 ): Promise<TemplateResources> {
 	// Load template.typ from root
 	const templatePath = `${templateBasePath}/template.typ`;
-	const templateContent = await plugin.app.vault.adapter.readBinary(
-		templatePath
-	);
+	const templateContent =
+		await plugin.app.vault.adapter.readBinary(templatePath);
 	const template = new Uint8Array(templateContent);
 
 	const images: Record<string, Uint8Array> = {};
@@ -182,9 +181,8 @@ async function loadTemplateResources(
 	try {
 		const imagesListing = await plugin.app.vault.adapter.list(imagesPath);
 		for (const imagePath of imagesListing.files) {
-			const imageContent = await plugin.app.vault.adapter.readBinary(
-				imagePath
-			);
+			const imageContent =
+				await plugin.app.vault.adapter.readBinary(imagePath);
 			const fileName = imagePath.split("/").pop();
 			if (fileName) {
 				images[`/images/${fileName}`] = new Uint8Array(imageContent);
