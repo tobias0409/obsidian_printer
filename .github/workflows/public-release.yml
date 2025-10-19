@@ -27,7 +27,7 @@ jobs:
             # Create assets ZIP
             - name: Package assets
               run: |
-                  zip -r printer-assets-${{ github.ref_name }}.zip assets
+                  zip -r printer-assets.zip assets
 
             # Create release with both plugin files and assets
             - name: Create Release
@@ -39,4 +39,4 @@ jobs:
                   gh release create "$tag" \
                     --title="$tag" \
                     --draft \
-                    main.js manifest.json styles.css printer-assets-${{ github.ref_name }}.zip
+                    main.js manifest.json styles.css printer-assets.zip

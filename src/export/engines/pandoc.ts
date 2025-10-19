@@ -5,8 +5,8 @@ import {
 	PreopenDirectory,
 	WASI,
 } from "@bjorn3/browser_wasi_shim";
-import { PLUGIN_DIR, WASM_PANDOC_VERSION } from "./utils/constants";
-import PrinterPlugin from "./main";
+import PrinterPlugin from "src/main";
+import { PLUGIN_DIR, WASM_PANDOC_VERSION } from "src/utils/constants";
 
 type WasmExports = {
 	memory: WebAssembly.Memory;
