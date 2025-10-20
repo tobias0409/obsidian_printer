@@ -19,7 +19,7 @@ export const installAssets = async (plugin: PrinterPlugin) => {
 
 			await plugin.app.vault.adapter.mkdir(assetsDir);
 
-			await downloadAndExtractAssets(plugin, ASSETS_VERSION);
+			await downloadAndExtractAssets(plugin, plugin.manifest.version);
 
 			plugin.settings.assetsVersion = ASSETS_VERSION;
 		} catch (error) {
