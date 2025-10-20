@@ -1,6 +1,6 @@
 {
 	"name": "printer",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "Print your notes in a pretty format using Pandoc and Typst utilizing custom templates.",
 	"main": "main.js",
 	"scripts": {
