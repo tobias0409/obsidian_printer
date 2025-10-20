@@ -1,4 +1,4 @@
-import { FileView, ItemView, TFile, WorkspaceLeaf } from "obsidian";
+import { FileView, TFile, WorkspaceLeaf } from "obsidian";
 import { previewPdf } from "src/export";
 import PrinterPlugin from "src/main";
 import { VIEW_TYPE_PREVIEW } from "src/utils/constants";
@@ -6,7 +6,7 @@ import { VIEW_TYPE_PREVIEW } from "src/utils/constants";
 export const registerPreviewView = (plugin: PrinterPlugin) => {
 	plugin.registerView(
 		VIEW_TYPE_PREVIEW,
-		(leaf) => new PreviewView(leaf, plugin)
+		(leaf) => new PreviewView(leaf, plugin),
 	);
 };
 
@@ -75,7 +75,7 @@ export class PreviewView extends FileView {
 
 	private async renderPreview(
 		container: HTMLElement,
-		loadingEl: HTMLElement
+		loadingEl: HTMLElement,
 	) {
 		try {
 			await previewPdf(this.file, container, this.plugin);

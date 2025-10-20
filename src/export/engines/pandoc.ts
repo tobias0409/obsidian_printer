@@ -14,7 +14,7 @@ type WasmExports = {
 	hs_init_with_rtsopts: (argcPtr: number, argvPtr: number) => void;
 	wasm_main: (argsPtr: number, argsLen: number) => void;
 	__wasm_call_ctors: () => void;
-	[key: string]: any;
+	[key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 type WasmInstance = WebAssembly.Instance & { exports: WasmExports };
@@ -22,12 +22,12 @@ type WasmInstance = WebAssembly.Instance & { exports: WasmExports };
 export const convertMarkdownToTypst = async (
 	plugin: PrinterPlugin,
 	markdownContent: string,
-	template: Uint8Array
+	template: Uint8Array,
 ): Promise<string> => {
 	const wasmFile = await plugin.app.vault.adapter.readBinary(
 		`${PLUGIN_DIR(
-			plugin
-		)}/assets/wasm/pandoc/${WASM_PANDOC_VERSION}/pandoc.wasm`
+			plugin,
+		)}/assets/wasm/pandoc/${WASM_PANDOC_VERSION}/pandoc.wasm`,
 	);
 
 	const args = ["pandoc.wasm", "+RTS", "-H64m", "-RTS"];
@@ -60,7 +60,7 @@ export const convertMarkdownToTypst = async (
 				? `-f markdown -t typst -s --template=/template.typ`
 				: `-f markdown -t typst -s`
 		}`,
-		markdownContent
+		markdownContent,
 	);
 	return result;
 };
@@ -70,15 +70,15 @@ function createWasi(
 	env: string[],
 	inFile: File,
 	outFile: File,
-	templateFile?: File
+	templateFile?: File,
 ) {
 	const fds = [
 		new OpenFile(new File(new Uint8Array(), { readonly: true })), // fd 0 (stdin)
 		ConsoleStdout.lineBuffered((msg) =>
-			console.log(`[WASI stdout] ${msg}`)
+			console.log(`[WASI stdout] ${msg}`),
 		), // fd 1
 		ConsoleStdout.lineBuffered((msg) =>
-			console.warn(`[WASI stderr] ${msg}`)
+			console.warn(`[WASI stderr] ${msg}`),
 		), // fd 2
 		new PreopenDirectory(
 			"/",
@@ -88,7 +88,7 @@ function createWasi(
 				...(templateFile
 					? [["template.typ", templateFile] as const]
 					: []),
-			])
+			]),
 		),
 	];
 
@@ -97,16 +97,8 @@ function createWasi(
 
 async function instantiateWasm(
 	wasmFile: ArrayBuffer,
-	wasi: WASI
+	wasi: WASI,
 ): Promise<WasmInstance> {
-	// instantiateStreaming is preferred when available
-	/* const resp = await fetch(wasmUrl);
-		if (!resp.ok) {
-			throw new Error(
-				`Failed to fetch wasm at ${wasmUrl}: ${resp.status}`
-			);
-		} */
-
 	// instantiate from bytes to be robust across environments
 	//const bytes = await resp.arrayBuffer();
 	const { instance } = (await WebAssembly.instantiate(wasmFile, {
@@ -134,7 +126,7 @@ function initializeHsRts(instance: WasmInstance, args: string[]) {
 		new Uint8Array(
 			instance.exports.memory.buffer,
 			argPtr,
-			bytes.length
+			bytes.length,
 		).set(bytes);
 		mem.setUint8(argPtr + bytes.length, 0); // null terminator
 		mem.setUint32(argv + 4 * i, argPtr, true);
@@ -154,7 +146,7 @@ function invokePandoc(
 	inFile: File,
 	outFile: File,
 	argsStr: string,
-	inStr: string
+	inStr: string,
 ): string {
 	const encoder = new TextEncoder();
 	const decoder = new TextDecoder("utf-8", { fatal: true });
@@ -164,7 +156,7 @@ function invokePandoc(
 	new Uint8Array(
 		instance.exports.memory.buffer,
 		argsPtr,
-		argsBytes.length
+		argsBytes.length,
 	).set(argsBytes);
 
 	// provide input

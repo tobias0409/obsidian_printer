@@ -4,10 +4,9 @@ import {
 	PrinterSettings,
 	registerSettingsTab,
 } from "./settings";
-import { ASSETS_VERSION, PLUGIN_NAME } from "./utils/constants";
+import { PLUGIN_NAME } from "./utils/constants";
 import { registerEvents } from "./events";
 import { registerCommands } from "./commands";
-import { registerPreviewView } from "./views/previewView";
 
 export default class PrinterPlugin extends Plugin {
 	settings: PrinterSettings;
@@ -36,7 +35,7 @@ export default class PrinterPlugin extends Plugin {
 		/*
 			Register View
 		*/
-		registerPreviewView(this);
+		//registerPreviewView(this);
 	}
 
 	onunload() {
@@ -47,7 +46,7 @@ export default class PrinterPlugin extends Plugin {
 		this.settings = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
-			await this.loadData()
+			await this.loadData(),
 		);
 	}
 

@@ -30,13 +30,13 @@ export class SettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 	display(): void {
-		let { containerEl } = this;
+		const { containerEl } = this;
 		containerEl.empty();
 
-		new Setting(this.containerEl)
+		new Setting(containerEl)
 			.setName("Assets")
 			.setDesc(
-				"Download required rendering assets to enable PDF generation. Downloads ~80 MB on first use."
+				"Download required rendering assets to enable PDF generation. Downloads ~80 MB on first use.",
 			)
 			.addButton((btn) => {
 				const currentAssetsVersion = this.plugin.settings.assetsVersion;
@@ -58,7 +58,7 @@ export class SettingTab extends PluginSettingTab {
 
 		containerEl.createEl("h2", { text: "Templates" });
 
-		new Setting(this.containerEl)
+		new Setting(containerEl)
 			.setName("Template folder location")
 			.setDesc("Files in this folder will be available as templates.")
 			.addSearch((cb) => {
@@ -76,7 +76,7 @@ export class SettingTab extends PluginSettingTab {
 				cb.containerEl.addClass("folder-suggester");
 			});
 
-		new Setting(this.containerEl)
+		new Setting(containerEl)
 			.setName("Fonts folder location")
 			.setDesc("Fonts in this folder will be loaded during printing.")
 			.addSearch((cb) => {

@@ -1,7 +1,7 @@
 import { TFile } from "obsidian";
 import { printPdf } from "src/export";
 import PrinterPlugin from "src/main";
-import { PLUGIN_NAME, VIEW_TYPE_PREVIEW } from "src/utils/constants";
+import { PLUGIN_NAME } from "src/utils/constants";
 
 export const registerCommands = (plugin: PrinterPlugin) => {
 	plugin.addCommand({
@@ -24,6 +24,7 @@ export const registerCommands = (plugin: PrinterPlugin) => {
 		},
 	});
 
+	/*
 	plugin.addCommand({
 		id: `${PLUGIN_NAME.toLowerCase()}-preview-pdf`,
 		name: `Preview PDF`,
@@ -51,4 +52,5 @@ export const registerCommands = (plugin: PrinterPlugin) => {
 			return false;
 		},
 	});
+	*/
 };

@@ -7,7 +7,7 @@ export class ExportPdfModal extends Modal {
 		app: App,
 		templateFilesNames: string[],
 		plugin: PrinterPlugin,
-		onSubmit: (templateFolderName: string) => Promise<void>
+		onSubmit: (templateFolderName: string) => Promise<void>,
 	) {
 		super(app);
 
@@ -15,7 +15,7 @@ export class ExportPdfModal extends Modal {
 
 		this.setTitle("Print PDF");
 
-		let selectedTemplate: string = "Default";
+		let selectedTemplate = "Default";
 		if (templateFilesNames.length > 0) {
 			templateFilesNames.push("Default");
 			const templateSetting = new Setting(this.contentEl)
@@ -30,9 +30,9 @@ export class ExportPdfModal extends Modal {
 							(template) => {
 								selectedTemplate = template;
 								templateSetting.setDesc(
-									"Selected template: " + selectedTemplate
+									"Selected template: " + selectedTemplate,
 								);
-							}
+							},
 						).open();
 					});
 				});
@@ -40,7 +40,7 @@ export class ExportPdfModal extends Modal {
 			new Setting(this.contentEl)
 				.setName("Template")
 				.setDesc(
-					"No custom templates installed. Using default template."
+					"No custom templates installed. Using default template.",
 				);
 		}
 
@@ -51,7 +51,7 @@ export class ExportPdfModal extends Modal {
 				.onClick(() => {
 					this.close();
 					onSubmit(selectedTemplate);
-				})
+				}),
 		);
 	}
 }
