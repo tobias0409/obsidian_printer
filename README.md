@@ -17,7 +17,18 @@ The demo below shows exporting a note with and without a custom template.
 
 This plugin isn’t yet in the official Obsidian Community Plugins directory. The easiest way to install it is via the BRAT plugin. Install BRAT from Community plugins, then add the `Printer` repository URL as a beta plugin. See the [BRAT](https://tfthacker.com/BRAT) documentation for details.
 
-## 🧩 Templates
+## Roadmap
+
+Below is a brief overview of planned and completed features for future releases:
+
+- [x] PDF print with embedded images
+- [x] Custom templates
+- [x] Custom fonts
+- [ ] PDF preview
+- [ ] Template marketplace accessible from plugin settings
+- [ ] Replace Pandoc with a native CommonMark + LaTeX converter to reduce plugin size
+
+## Templates
 
 Printer supports fully customizable Typst-based templates, giving you complete control over the layout, styling, and structure of the exported PDF.
 
@@ -103,7 +114,6 @@ $body$
 ```
 
 Important to note are the placeholders. Placeholders allows you to dynamically insert or conditionally display content based on the note’s metadata. Placeholders are defined in the note’s YAML frontmatter and are exposed as variables using Pandoc’s template syntax. For example, you define a metadata field `title: Some title` in the note’s YAML frontmatter. Then, in the template, you can access the `title` variable using the syntax `$title$`. Special is the $body$ placeholder, which represents the main content of the note. For more information, see the [Pandoc documentation](https://pandoc.org/MANUAL.html#variables).
-
 
 ## Feedback
 
