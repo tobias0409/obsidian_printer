@@ -24,9 +24,11 @@ Below is a brief overview of planned and completed features for future releases:
 - [x] PDF print with embedded images
 - [x] Custom templates
 - [x] Custom fonts
+- [ ] Replace Pandoc/Typst with a native converter using mdast/pdfmaker and custom logic to reduce plugin size
+	- [ ] Evalution to reduce complexity writing custom templates 
 - [ ] PDF preview
 - [ ] Template marketplace accessible from plugin settings
-- [ ] Replace Pandoc with a native CommonMark + LaTeX converter to reduce plugin size
+
 
 ## Templates
 
