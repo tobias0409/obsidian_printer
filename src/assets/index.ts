@@ -1,1 +1,0 @@
-export { installAssets } from "./downloader";

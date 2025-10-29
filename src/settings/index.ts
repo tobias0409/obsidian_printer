@@ -1,8 +1,6 @@
 import { PluginSettingTab, Setting } from "obsidian";
 import Printer from "src/main";
 import { FolderSuggest } from "./suggesters/FolderSuggester";
-import { ASSETS_VERSION } from "src/utils/constants";
-import { installAssets } from "src/assets";
 
 export const registerSettingsTab = (plugin: Printer) => {
 	plugin.addSettingTab(new SettingTab(plugin));
@@ -11,14 +9,12 @@ export const registerSettingsTab = (plugin: Printer) => {
 export interface PrinterSettings {
 	templatesFolder: string;
 	fontsFolder: string;
-	assetsVersion: string;
 	isOverwrite: boolean;
 }
 
 export const DEFAULT_SETTINGS: PrinterSettings = {
 	templatesFolder: "",
 	fontsFolder: "",
-	assetsVersion: "",
 	isOverwrite: true,
 };
 
@@ -32,29 +28,6 @@ export class SettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName("Assets")
-			.setDesc(
-				"Download required rendering assets to enable PDF generation. Downloads ~80 MB on first use.",
-			)
-			.addButton((btn) => {
-				const currentAssetsVersion = this.plugin.settings.assetsVersion;
-				let buttonText = "";
-				if (currentAssetsVersion === "") {
-					buttonText = "Download";
-				} else if (currentAssetsVersion === ASSETS_VERSION) {
-					buttonText = "Re-download";
-				} else {
-					buttonText = "Update";
-				}
-
-				btn.setButtonText(buttonText);
-				btn.onClick(async () => {
-					await installAssets(this.plugin);
-				});
-				btn.setClass("mod-cta");
-			});
 
 		containerEl.createEl("h2", { text: "Templates" });
 

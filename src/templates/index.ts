@@ -2,7 +2,7 @@ import { normalizePath } from "obsidian";
 import PrinterPlugin from "src/main";
 
 export const listTemplates = async (
-	plugin: PrinterPlugin
+	plugin: PrinterPlugin,
 ): Promise<string[]> => {
 	const templateFolder = (plugin.settings.templatesFolder || "").trim();
 	if (!templateFolder) return [];
@@ -15,7 +15,7 @@ export const listTemplates = async (
 
 	for (const folderPath of listing.folders) {
 		const dir = await adapter.list(folderPath);
-		const expected = normalizePath(`${folderPath}/template.typ`);
+		const expected = normalizePath(`${folderPath}/template.md`);
 		const hasTemplateTyp = dir.files.map(normalizePath).includes(expected);
 		if (hasTemplateTyp) {
 			const name =
